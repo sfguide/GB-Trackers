@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Monthly Notes Grid (Compact)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f4f4f4;
+    }
+    .tracker-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .tracker-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .tracker-subtitle {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .month-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .month-row label {
+      font-size: 0.85rem;
+      color: #444;
+    }
+    .month-row select,
+    .month-row input {
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .month-row input {
+      min-width: 180px;
+    }
+    .tracker-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tracker-controls button {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: none;
+      background: #eee;
+      cursor: pointer;
+    }
+    .tracker-controls button:active {
+      transform: scale(0.98);
+    }
+    .activity-add {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .activity-add input {
+      flex: 1;
+      min-width: 150px;
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .activity-add button {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: none;
+      background: #e0e0e0;
+      cursor: pointer;
+    }
+    .activity-add button:active {
+      transform: scale(0.98);
+    }
+
+    /* Header row (Activity + Day numbers) */
+    .tracker-labels {
+      display: grid;
+      grid-auto-rows: 24px;
+      grid-template-columns: 160px repeat(31, 40px);
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      min-width: max-content;
+    }
+    .tracker-labels div {
+      padding: 4px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .row-label-header {
+      text-align: left;
+    }
+
+    .tracker-grid-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tracker-grid {
+      display: grid;
+      grid-auto-rows: 32px;
+      grid-template-columns: 160px repeat(31, 40px);
+      gap: 4px;
+      min-width: max-content;
+    }
+
+    .row-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      font-size: 0.8rem;
+      color: #555;
+      box-sizing: border-box;
+      gap: 4px;
+    }
+    .activity-name {
+      flex: 1;
+      outline: none;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+    .activity-name[contenteditable="true"]:focus {
+      background: #f0f0f0;
+    }
+    .row-buttons {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .row-button {
+      border: none;
+      background: #eee;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .row-button.delete {
+      background: #f8d7da;
+    }
+    .row-button:active {
+      transform: scale(0.95);
+    }
+
+    .cell {
+      background: #fafafa;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      box-sizing: border-box;
+      padding: 0;
+    }
+    .cell-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 0.65rem;
+      padding: 2px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .cell-input::placeholder {
+      color: #bbb;
+    }
+
+    .tracker-footer {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="tracker-container">
+    <div class="tracker-title">Monthly Notes Grid (Compact)</div>
+    <div class="tracker-subtitle">
+      Select a month, add activities, then type short notes in each day. Each month’s notes are saved separately on this device.
+    </div>
+
+    <div class="month-row">
+      <label for="monthSelect">Month:</label>
+      <select id="monthSelect">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+
+      <label for="yearSelect">Year:</label>
+      <select id="yearSelect"></select>
+
+      <label for="monthInput">Label:</label>
+      <input
+        id="monthInput"
+        type="text"
+        placeholder="e.g., November 2025"
+      />
+    </div>
+
+    <div class="tracker-controls">
+      <div class="activity-add">
+        <input
+          id="newActivityInput"
+          type="text"
+          placeholder="Add a new activity (row)…"
+        />
+        <button id="addActivityBtn">Add Row</button>
+      </div>
+      <button id="resetBtn">Clear This Month</button>
+    </div>
+
+    <div id="dayLabels" class="tracker-labels"></div>
+
+    <div class="tracker-grid-wrapper">
+      <div id="trackerGrid" class="tracker-grid"></div>
+    </div>
+
+    <div class="tracker-footer">
+      Tip: Tap activity names to rename them. Each month has its own notes.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const DAYS = 31;
+
+      const DEFAULT_ACTIVITIES = [
+        "Walk 20 minutes",
+        "Stretching / Mobility",
+        "Read 10 minutes",
+        "Meditation",
+        "Drink 8 glasses of water"
+      ];
+
+      // Storage structure:
+      // {
+      //   selectedMonth: number,
+      //   selectedYear: number,
+      //   activities: string[],
+      //   months: { "YYYY-MM": { label: string, cells: { "rowIndex-dayIndex": "text" } } }
+      // }
+      const STORAGE_KEY = "gb-notes-grid-compact-31days-per-month-v1";
+
+      const monthNames = [
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+      ];
+
+      const monthSelect = document.getElementById("monthSelect");
+      const yearSelect = document.getElementById("yearSelect");
+      const monthInput = document.getElementById("monthInput");
+      const dayLabels = document.getElementById("dayLabels");
+      const trackerGrid = document.getElementById("trackerGrid");
+      const resetBtn = document.getElementById("resetBtn");
+      const newActivityInput = document.getElementById("newActivityInput");
+      const addActivityBtn = document.getElementById("addActivityBtn");
+
+      let appState = loadState();
+
+      function getMonthKey(m, y) {
+        return y + "-" + String(m + 1).padStart(2, "0");
+      }
+
+      function ensureMonthState(m, y) {
+        const key = getMonthKey(m, y);
+        if (!appState.months[key]) {
+          appState.months[key] = {
+            label: monthNames[m] + " " + y,
+            cells: {}
+          };
+          saveState();
+        }
+        return appState.months[key];
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          const now = new Date();
+
+          if (typeof parsed.selectedMonth !== "number" || parsed.selectedMonth < 0 || parsed.selectedMonth > 11) {
+            parsed.selectedMonth = now.getMonth();
+          }
+          if (typeof parsed.selectedYear !== "number") {
+            parsed.selectedYear = now.getFullYear();
+          }
+          if (!Array.isArray(parsed.activities) || parsed.activities.length === 0) {
+            parsed.activities = DEFAULT_ACTIVITIES.slice();
+          }
+          if (!parsed.months || typeof parsed.months !== "object") {
+            parsed.months = {};
+          }
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+          return parsed;
+        } catch (e) {
+          const now = new Date();
+          return {
+            selectedMonth: now.getMonth(),
+            selectedYear: now.getFullYear(),
+            activities: DEFAULT_ACTIVITIES.slice(),
+            months: {}
+          };
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      }
+
+      function initYearSelect() {
+        const currentYear = new Date().getFullYear();
+        const startYear = currentYear - 3;
+        const endYear = currentYear + 3;
+
+        yearSelect.innerHTML = "";
+        for (let y = startYear; y <= endYear; y++) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          yearSelect.appendChild(opt);
+        }
+      }
+
+      function setMonthYearControlsFromState() {
+        monthSelect.value = String(appState.selectedMonth);
+        yearSelect.value = String(appState.selectedYear);
+
+        const monthState = ensureMonthState(appState.selectedMonth, appState.selectedYear);
+        monthInput.value = monthState.label || (monthNames[appState.selectedMonth] + " " + appState.selectedYear);
+      }
+
+      function updateMonthLabelFromInput() {
+        const m = appState.selectedMonth;
+        const y = appState.selectedYear;
+        const key = getMonthKey(m, y);
+        const monthState = ensureMonthState(m, y);
+        monthState.label = monthInput.value.trim() || (monthNames[m] + " " + y);
+        appState.months[key] = monthState;
+        saveState();
+      }
+
+      function handleMonthYearChange() {
+        const m = parseInt(monthSelect.value, 10);
+        const y = parseInt(yearSelect.value, 10);
+        if (!isNaN(m)) appState.selectedMonth = m;
+        if (!isNaN(y)) appState.selectedYear = y;
+
+        ensureMonthState(appState.selectedMonth, appState.selectedYear);
+
+        setMonthYearControlsFromState();
+        saveState();
+        buildGrid();
+      }
+
+      function initMonthInput() {
+        monthInput.addEventListener("blur", updateMonthLabelFromInput);
+        monthInput.addEventListener("change", updateMonthLabelFromInput);
+      }
+
+      function buildDayLabels() {
+        dayLabels.innerHTML = "";
+
+        const header = document.createElement("div");
+        header.className = "row-label-header";
+        header.textContent = "Activity";
+        dayLabels.appendChild(header);
+
+        for (let d = 1; d <= DAYS; d++) {
+          const dDiv = document.createElement("div");
+          dDiv.textContent = d;
+          dayLabels.appendChild(dDiv);
+        }
+      }
+
+      function buildGrid() {
+        trackerGrid.innerHTML = "";
+
+        const m = appState.selectedMonth;
+        const y = appState.selectedYear;
+        const monthState = ensureMonthState(m, y);
+        const cells = monthState.cells;
+
+        appState.activities.forEach((activity, rowIndex) => {
+          const rowLabel = document.createElement("div");
+          rowLabel.className = "row-label";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "activity-name";
+          nameSpan.contentEditable = "true";
+          nameSpan.textContent = activity;
+          nameSpan.dataset.rowIndex = rowIndex;
+
+          nameSpan.addEventListener("blur", function () {
+            const idx = parseInt(this.dataset.rowIndex, 10);
+            let newName = this.textContent.trim();
+            if (!newName) {
+              newName = "Activity " + (idx + 1);
+              this.textContent = newName;
+            }
+            appState.activities[idx] = newName;
+            saveState();
+          });
+
+          const buttonsDiv = document.createElement("div");
+          buttonsDiv.className = "row-buttons";
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "row-button delete";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.dataset.rowIndex = rowIndex;
+
+          deleteBtn.addEventListener("click", function () {
+            const idx = parseInt(this.dataset.rowIndex, 10);
+            if (!confirm("Delete this activity row?")) return;
+            deleteActivityRow(idx);
+          });
+
+          buttonsDiv.appendChild(deleteBtn);
+          rowLabel.appendChild(nameSpan);
+          rowLabel.appendChild(buttonsDiv);
+          trackerGrid.appendChild(rowLabel);
+
+          for (let dayIndex = 0; dayIndex < DAYS; dayIndex++) {
+            const cell = document.createElement("div");
+            const id = rowIndex + "-" + dayIndex;
+            cell.className = "cell";
+
+            const input = document.createElement("input");
+            input.className = "cell-input";
+            input.type = "text";
+            input.maxLength = 8; // compact, short notes
+            input.dataset.id = id;
+            input.value = cells[id] || "";
+            input.placeholder = "";
+
+            input.addEventListener("input", function () {
+              const cellId = this.dataset.id;
+              monthState.cells[cellId] = this.value;
+              saveState();
+            });
+
+            cell.appendChild(input);
+            trackerGrid.appendChild(cell);
+          }
+        });
+      }
+
+      function deleteActivityRow(rowIndex) {
+        appState.activities = appState.activities.filter((_, i) => i !== rowIndex);
+
+        // Adjust cells in ALL months, since rows are shared
+        Object.keys(appState.months).forEach((key) => {
+          const monthState = appState.months[key];
+          const oldCells = monthState.cells || {};
+          const newCells = {};
+          Object.keys(oldCells).forEach((cellKey) => {
+            const [rStr, dStr] = cellKey.split("-");
+            const r = parseInt(rStr, 10);
+            const d = parseInt(dStr, 10);
+            if (isNaN(r) || isNaN(d)) return;
+
+            if (r < rowIndex) {
+              newCells[r + "-" + d] = oldCells[cellKey];
+            } else if (r > rowIndex) {
+              const newR = r - 1;
+              newCells[newR + "-" + d] = oldCells[cellKey];
+            }
+          });
+          monthState.cells = newCells;
+        });
+
+        saveState();
+        buildGrid();
+      }
+
+      function addActivity() {
+        const name = newActivityInput.value.trim();
+        if (!name) return;
+        appState.activities.push(name);
+        newActivityInput.value = "";
+        saveState();
+        buildGrid();
+      }
+
+      function clearCurrentMonthCells() {
+        const m = appState.selectedMonth;
+        const y = appState.selectedYear;
+        const monthState = ensureMonthState(m, y);
+        monthState.cells = {};
+        saveState();
+        buildGrid();
+      }
+
+      addActivityBtn.addEventListener("click", addActivity);
+      newActivityInput.addEventListener("keyup", function (e) {
+        if (e.key === "Enter") {
+          addActivity();
+        }
+      });
+
+      resetBtn.addEventListener("click", function () {
+        if (!confirm("Clear all notes for this month?")) return;
+        clearCurrentMonthCells();
+      });
+
+      monthSelect.addEventListener("change", handleMonthYearChange);
+      yearSelect.addEventListener("change", handleMonthYearChange);
+
+      initYearSelect();
+      setMonthYearControlsFromState();
+      initMonthInput();
+      buildDayLabels();
+      buildGrid();
+    })();
+  </script>
+</body>
+</html>

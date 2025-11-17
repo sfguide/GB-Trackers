@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Monthly Checkmark Tracker</title>
+<style>
+  body { font-family: Arial; padding: 16px; background: #fafafa; }
+  .wrap { max-width: 1200px; margin: auto; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  h1 { text-align:center; margin-bottom:4px; }
+  .sub { text-align:center; color:#666; margin-bottom:14px; }
+
+  .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:12px; font-size:14px; }
+  .row select, .row input { padding:6px; font-size:14px; }
+
+  .add-row { display:flex; gap:6px; margin-bottom:12px; }
+  .add-row input { flex:1; padding:6px; font-size:14px; }
+  .add-row button, button { padding:6px 12px; background:#eee; border:1px solid #ccc; cursor:pointer; }
+
+  .days { display:grid; grid-template-columns:160px repeat(31,32px); gap:4px; font-size:12px; text-align:center; }
+  .grid { display:grid; grid-template-columns:160px repeat(31,32px); gap:4px; }
+
+  .act-label { display:flex; justify-content:space-between; padding:0 4px; font-size:13px; }
+  .act-name { flex:1; outline:none; }
+  .cell { border:1px solid #ddd; border-radius:6px; background:#f7f7f7; cursor:pointer; height:30px; }
+  .cell.active { background:#4caf50; border-color:#4caf50; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Monthly Checkmark Tracker</h1>
+  <div class="sub">Each month has its own saved grid.</div>
+
+  <div class="row">
+    <label>Month:</label>
+    <select id="monthSelect">
+      <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+      <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+      <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+      <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+    </select>
+
+    <label>Year:</label>
+    <select id="yearSelect"></select>
+
+    <label>Label:</label>
+    <input id="monthLabel" placeholder="e.g., November 2025">
+  </div>
+
+  <div class="add-row">
+    <input id="addInput" placeholder="Add a new activity…">
+    <button id="addBtn">Add Row</button>
+    <button id="clearBtn">Clear This Month</button>
+  </div>
+
+  <div id="days" class="days"></div>
+  <div id="grid" class="grid"></div>
+</div>
+
+<script>
+(function(){
+  const DAYS=31;
+  const KEY="trackerCheckmark_perMonth_v1";
+  const M=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  let S=load();
+  function load(){
+    let o=localStorage.getItem(KEY);
+    if(!o) o={selectedMonth:new Date().getMonth(),selectedYear:new Date().getFullYear(),activities:["Walk","Read","Stretch"],months:{}};
+    else o=JSON.parse(o);
+    if(!o.months) o.months={};
+    return o;
+  }
+  function save(){ localStorage.setItem(KEY,JSON.stringify(S)); }
+
+  function key(m,y){ return y+"-"+String(m+1).padStart(2,"0"); }
+  function initMonth(m,y){
+    let k=key(m,y);
+    if(!S.months[k]) S.months[k]={label:M[m]+" "+y, cells:{}};
+    return S.months[k];
+  }
+
+  function fillYears(){
+    const y=document.getElementById("yearSelect");
+    let c=new Date().getFullYear();
+    for(let i=c-3;i<=c+3;i++){
+      let o=document.createElement("option");
+      o.value=i; o.textContent=i;
+      y.appendChild(o);
+    }
+  }
+
+  function buildDays(){
+    const d=document.getElementById("days");
+    d.innerHTML="";
+    d.appendChild(div("Activity"));
+    for(let i=1;i<=DAYS;i++) d.appendChild(div(i));
+  }
+
+  function div(t){let x=document.createElement("div"); x.textContent=t; return x;}
+
+  function buildGrid(){
+    let g=document.getElementById("grid");
+    g.innerHTML="";
+    let m=S.selectedMonth, y=S.selectedYear, MS=initMonth(m,y), C=MS.cells;
+
+    S.activities.forEach((A,ri)=>{
+      let L=document.createElement("div");
+      L.className="act-label";
+
+      let nm=document.createElement("span");
+      nm.className="act-name";
+      nm.contentEditable=true;
+      nm.textContent=A;
+      nm.onblur=()=>{S.activities[ri]=nm.textContent.trim()||("Activity "+(ri+1)); save();};
+      L.appendChild(nm);
+
+      let del=document.createElement("button");
+      del.textContent="X"; del.onclick=()=>delRow(ri);
+      L.appendChild(del);
+
+      g.appendChild(L);
+
+      for(let d=0;d<DAYS;d++){
+        let id=ri+"-"+d;
+        let c=document.createElement("div");
+        c.className="cell";
+        if(C[id]) c.classList.add("active");
+        c.onclick=()=>{
+          let on=c.classList.toggle("active");
+          C[id]=on?1:0; save();
+        };
+        g.appendChild(c);
+      }
+    });
+  }
+
+  function delRow(ri){
+    S.activities=S.activities.filter((_,i)=>i!==ri);
+    Object.keys(S.months).forEach(k=>{
+      let old=S.months[k].cells, neo={};
+      Object.keys(old).forEach(id=>{
+        let [r,d]=id.split("-").map(Number);
+        if(r<ri) neo[id]=old[id];
+        else if(r>ri) neo[(r-1)+"-"+d]=old[id];
+      });
+      S.months[k].cells=neo;
+    });
+    save(); buildGrid();
+  }
+
+  document.getElementById("addBtn").onclick=()=>{
+    let v=document.getElementById("addInput").value.trim();
+    if(!v) return;
+    S.activities.push(v); save(); document.getElementById("addInput").value="";
+    buildGrid();
+  };
+
+  document.getElementById("clearBtn").onclick=()=>{
+    if(!confirm("Clear all checkmarks for this month?")) return;
+    let MS=initMonth(S.selectedMonth,S.selectedYear);
+    MS.cells={}; save(); buildGrid();
+  };
+
+  document.getElementById("monthLabel").onchange=()=>{
+    let MS=initMonth(S.selectedMonth,S.selectedYear);
+    MS.label=document.getElementById("monthLabel").value; save();
+  };
+
+  document.getElementById("monthSelect").onchange=changeMY;
+  document.getElementById("yearSelect").onchange=changeMY;
+
+  function changeMY(){
+    S.selectedMonth=parseInt(document.getElementById("monthSelect").value);
+    S.selectedYear=parseInt(document.getElementById("yearSelect").value);
+    let MS=initMonth(S.selectedMonth,S.selectedYear);
+    document.getElementById("monthLabel").value=MS.label;
+    save(); buildGrid();
+  }
+
+  fillYears();
+  document.getElementById("monthSelect").value=S.selectedMonth;
+  document.getElementById("yearSelect").value=S.selectedYear;
+  document.getElementById("monthLabel").value=initMonth(S.selectedMonth,S.selectedYear).label;
+
+  buildDays();
+  buildGrid();
+})();
+</script>
+</body>
+</html>
