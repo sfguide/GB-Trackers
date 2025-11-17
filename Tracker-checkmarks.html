@@ -1,0 +1,201 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;}
+{\colortbl;\red255\green255\blue255;\red135\green5\blue129;\red151\green0\blue126;\red111\green90\blue30;
+\red181\green0\blue19;\red20\green0\blue196;\red136\green93\blue48;}
+{\*\expandedcolortbl;;\cssrgb\c60784\c13725\c57647;\cssrgb\c66667\c5098\c56863;\cssrgb\c51373\c42353\c15686;
+\cssrgb\c76863\c10196\c8627;\cssrgb\c10980\c0\c81176;\cssrgb\c60784\c43922\c24706;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs20\fsmilli10010 \cf2 <!DOCTYPE \cf3 html\cf2 >\cf0 \
+\cf3 <html \cf4 lang\cf3 =\cf5 "en"\cf3 >\cf0 \
+\cf3 <head>\cf0 \
+\cf3 <meta \cf4 charset\cf3 =\cf5 "UTF-8"\cf3 >\cf0 \
+\cf3 <meta \cf4 name\cf3 =\cf5 "viewport"\cf3  \cf4 content\cf3 =\cf5 "width=device-width,initial-scale=1.0"\cf3 >\cf0 \
+\cf3 <title>\cf0 Monthly Checkmark Tracker\cf3 </title>\cf0 \
+\cf3 <style>\cf0 \
+  \cf3 body\cf0  \{ \cf3 font-family\cf0 : Arial; \cf3 padding\cf0 : \cf6 16px\cf0 ; \cf3 background\cf0 : \cf6 #fafafa\cf0 ; \}\
+  \cf7 .wrap\cf0  \{ \cf3 max-width\cf0 : \cf6 1200px\cf0 ; \cf3 margin\cf0 : auto; \cf3 background\cf0 : \cf6 #fff\cf0 ; \cf3 padding\cf0 : \cf6 16px\cf0 ; \cf3 border-radius\cf0 : \cf6 12px\cf0 ; \cf3 box-shadow\cf0 : \cf6 0\cf0  \cf6 2px\cf0  \cf6 6px\cf0  rgba(\cf6 0\cf0 ,\cf6 0\cf0 ,\cf6 0\cf0 ,\cf6 0.1\cf0 ); \}\
+  \cf3 h1\cf0  \{ \cf3 text-align\cf0 :center; \cf3 margin-bottom\cf0 :\cf6 4px\cf0 ; \}\
+  \cf7 .sub\cf0  \{ \cf3 text-align\cf0 :center; \cf3 color\cf0 :\cf6 #666\cf0 ; \cf3 margin-bottom\cf0 :\cf6 14px\cf0 ; \}\
+\
+  \cf7 .row\cf0  \{ \cf3 display\cf0 :flex; \cf3 gap\cf0 :\cf6 10px\cf0 ; \cf3 justify-content\cf0 :center; \cf3 flex-wrap\cf0 :wrap; \cf3 margin-bottom\cf0 :\cf6 12px\cf0 ; \cf3 font-size\cf0 :\cf6 14px\cf0 ; \}\
+  \cf7 .row\cf0  \cf3 select\cf0 , \cf7 .row\cf0  \cf3 input\cf0  \{ \cf3 padding\cf0 :\cf6 6px\cf0 ; \cf3 font-size\cf0 :\cf6 14px\cf0 ; \}\
+\
+  \cf7 .add-row\cf0  \{ \cf3 display\cf0 :flex; \cf3 gap\cf0 :\cf6 6px\cf0 ; \cf3 margin-bottom\cf0 :\cf6 12px\cf0 ; \}\
+  \cf7 .add-row\cf0  \cf3 input\cf0  \{ \cf3 flex\cf0 :\cf6 1\cf0 ; \cf3 padding\cf0 :\cf6 6px\cf0 ; \cf3 font-size\cf0 :\cf6 14px\cf0 ; \}\
+  \cf7 .add-row\cf0  \cf3 button\cf0 , \cf3 button\cf0  \{ \cf3 padding\cf0 :\cf6 6px\cf0  \cf6 12px\cf0 ; \cf3 background\cf0 :\cf6 #eee\cf0 ; \cf3 border\cf0 :\cf6 1px\cf0  solid \cf6 #ccc\cf0 ; \cf3 cursor\cf0 :pointer; \}\
+\
+  \cf7 .days\cf0  \{ \cf3 display\cf0 :grid; \cf3 grid-template-columns\cf0 :\cf6 160px\cf0  repeat(\cf6 31\cf0 ,\cf6 32px\cf0 ); \cf3 gap\cf0 :\cf6 4px\cf0 ; \cf3 font-size\cf0 :\cf6 12px\cf0 ; \cf3 text-align\cf0 :center; \}\
+  \cf7 .grid\cf0  \{ \cf3 display\cf0 :grid; \cf3 grid-template-columns\cf0 :\cf6 160px\cf0  repeat(\cf6 31\cf0 ,\cf6 32px\cf0 ); \cf3 gap\cf0 :\cf6 4px\cf0 ; \}\
+\
+  \cf7 .act-label\cf0  \{ \cf3 display\cf0 :flex; \cf3 justify-content\cf0 :space-between; \cf3 padding\cf0 :\cf6 0\cf0  \cf6 4px\cf0 ; \cf3 font-size\cf0 :\cf6 13px\cf0 ; \}\
+  \cf7 .act-name\cf0  \{ \cf3 flex\cf0 :\cf6 1\cf0 ; \cf3 outline\cf0 :none; \}\
+  \cf7 .cell\cf0  \{ \cf3 border\cf0 :\cf6 1px\cf0  solid \cf6 #ddd\cf0 ; \cf3 border-radius\cf0 :\cf6 6px\cf0 ; \cf3 background\cf0 :\cf6 #f7f7f7\cf0 ; \cf3 cursor\cf0 :pointer; \cf3 height\cf0 :\cf6 30px\cf0 ; \}\
+  \cf7 .cell.active\cf0  \{ \cf3 background\cf0 :\cf6 #4caf50\cf0 ; \cf3 border-color\cf0 :\cf6 #4caf50\cf0 ; \}\
+\cf3 </style>\cf0 \
+\cf3 </head>\cf0 \
+\cf3 <body>\cf0 \
+\
+\cf3 <div \cf4 class\cf3 =\cf5 "wrap"\cf3 >\cf0 \
+  \cf3 <h1>\cf0 Monthly Checkmark Tracker\cf3 </h1>\cf0 \
+  \cf3 <div \cf4 class\cf3 =\cf5 "sub"\cf3 >\cf0 Each month has its own saved grid.\cf3 </div>\cf0 \
+\
+  \cf3 <div \cf4 class\cf3 =\cf5 "row"\cf3 >\cf0 \
+    \cf3 <label>\cf0 Month:\cf3 </label>\cf0 \
+    \cf3 <select \cf4 id\cf3 =\cf5 "monthSelect"\cf3 >\cf0 \
+      \cf3 <option \cf4 value\cf3 =\cf5 "0"\cf3 >\cf0 January\cf3 </option><option \cf4 value\cf3 =\cf5 "1"\cf3 >\cf0 February\cf3 </option><option \cf4 value\cf3 =\cf5 "2"\cf3 >\cf0 March\cf3 </option>\cf0 \
+      \cf3 <option \cf4 value\cf3 =\cf5 "3"\cf3 >\cf0 April\cf3 </option><option \cf4 value\cf3 =\cf5 "4"\cf3 >\cf0 May\cf3 </option><option \cf4 value\cf3 =\cf5 "5"\cf3 >\cf0 June\cf3 </option>\cf0 \
+      \cf3 <option \cf4 value\cf3 =\cf5 "6"\cf3 >\cf0 July\cf3 </option><option \cf4 value\cf3 =\cf5 "7"\cf3 >\cf0 August\cf3 </option><option \cf4 value\cf3 =\cf5 "8"\cf3 >\cf0 September\cf3 </option>\cf0 \
+      \cf3 <option \cf4 value\cf3 =\cf5 "9"\cf3 >\cf0 October\cf3 </option><option \cf4 value\cf3 =\cf5 "10"\cf3 >\cf0 November\cf3 </option><option \cf4 value\cf3 =\cf5 "11"\cf3 >\cf0 December\cf3 </option>\cf0 \
+    \cf3 </select>\cf0 \
+\
+    \cf3 <label>\cf0 Year:\cf3 </label>\cf0 \
+    \cf3 <select \cf4 id\cf3 =\cf5 "yearSelect"\cf3 ></select>\cf0 \
+\
+    \cf3 <label>\cf0 Label:\cf3 </label>\cf0 \
+    \cf3 <input \cf4 id\cf3 =\cf5 "monthLabel"\cf3  \cf4 placeholder\cf3 =\cf5 "e.g., November 2025"\cf3 >\cf0 \
+  \cf3 </div>\cf0 \
+\
+  \cf3 <div \cf4 class\cf3 =\cf5 "add-row"\cf3 >\cf0 \
+    \cf3 <input \cf4 id\cf3 =\cf5 "addInput"\cf3  \cf4 placeholder\cf3 =\cf5 "Add a new activity\'85"\cf3 >\cf0 \
+    \cf3 <button \cf4 id\cf3 =\cf5 "addBtn"\cf3 >\cf0 Add Row\cf3 </button>\cf0 \
+    \cf3 <button \cf4 id\cf3 =\cf5 "clearBtn"\cf3 >\cf0 Clear This Month\cf3 </button>\cf0 \
+  \cf3 </div>\cf0 \
+\
+  \cf3 <div \cf4 id\cf3 =\cf5 "days"\cf3  \cf4 class\cf3 =\cf5 "days"\cf3 ></div>\cf0 \
+  \cf3 <div \cf4 id\cf3 =\cf5 "grid"\cf3  \cf4 class\cf3 =\cf5 "grid"\cf3 ></div>\cf0 \
+\cf3 </div>\cf0 \
+\
+\cf3 <script>\cf0 \
+(\cf3 function\cf0 ()\{\
+  \cf3 const\cf0  DAYS=\cf6 31\cf0 ;\
+  \cf3 const\cf0  KEY=\cf5 "trackerCheckmark_perMonth_v1"\cf0 ;\
+  \cf3 const\cf0  M=[\cf5 "January"\cf0 ,\cf5 "February"\cf0 ,\cf5 "March"\cf0 ,\cf5 "April"\cf0 ,\cf5 "May"\cf0 ,\cf5 "June"\cf0 ,\cf5 "July"\cf0 ,\cf5 "August"\cf0 ,\cf5 "September"\cf0 ,\cf5 "October"\cf0 ,\cf5 "November"\cf0 ,\cf5 "December"\cf0 ];\
+\
+  \cf3 let\cf0  S=load();\
+  \cf3 function\cf0  load()\{\
+    \cf3 let\cf0  o=localStorage.getItem(KEY);\
+    \cf3 if\cf0 (!o) o=\{\cf4 selectedMonth\cf0 :\cf3 new\cf0  Date().getMonth(),\cf4 selectedYear\cf0 :\cf3 new\cf0  Date().getFullYear(),\cf4 activities\cf0 :[\cf5 "Walk"\cf0 ,\cf5 "Read"\cf0 ,\cf5 "Stretch"\cf0 ],\cf4 months\cf0 :\{\}\};\
+    \cf3 else\cf0  o=JSON.parse(o);\
+    \cf3 if\cf0 (!o.months) o.months=\{\};\
+    \cf3 return\cf0  o;\
+  \}\
+  \cf3 function\cf0  save()\{ localStorage.setItem(KEY,JSON.stringify(S)); \}\
+\
+  \cf3 function\cf0  key(m,y)\{ \cf3 return\cf0  y+\cf5 "-"\cf0 +String(m+\cf6 1\cf0 ).padStart(\cf6 2\cf0 ,\cf5 "0"\cf0 ); \}\
+  \cf3 function\cf0  initMonth(m,y)\{\
+    \cf3 let\cf0  k=key(m,y);\
+    \cf3 if\cf0 (!S.months[k]) S.months[k]=\{\cf4 label\cf0 :M[m]+\cf5 " "\cf0 +y, \cf4 cells\cf0 :\{\}\};\
+    \cf3 return\cf0  S.months[k];\
+  \}\
+\
+  \cf3 function\cf0  fillYears()\{\
+    \cf3 const\cf0  y=document.getElementById(\cf5 "yearSelect"\cf0 );\
+    \cf3 let\cf0  c=\cf3 new\cf0  Date().getFullYear();\
+    \cf3 for\cf0 (\cf3 let\cf0  i=c-\cf6 3\cf0 ;i<=c+\cf6 3\cf0 ;i++)\{\
+      \cf3 let\cf0  o=document.createElement(\cf5 "option"\cf0 );\
+      o.value=i; o.textContent=i;\
+      y.appendChild(o);\
+    \}\
+  \}\
+\
+  \cf3 function\cf0  buildDays()\{\
+    \cf3 const\cf0  d=document.getElementById(\cf5 "days"\cf0 );\
+    d.innerHTML=\cf5 ""\cf0 ;\
+    d.appendChild(div(\cf5 "Activity"\cf0 ));\
+    \cf3 for\cf0 (\cf3 let\cf0  i=\cf6 1\cf0 ;i<=DAYS;i++) d.appendChild(div(i));\
+  \}\
+\
+  \cf3 function\cf0  div(t)\{\cf3 let\cf0  x=document.createElement(\cf5 "div"\cf0 ); x.textContent=t; \cf3 return\cf0  x;\}\
+\
+  \cf3 function\cf0  buildGrid()\{\
+    \cf3 let\cf0  g=document.getElementById(\cf5 "grid"\cf0 );\
+    g.innerHTML=\cf5 ""\cf0 ;\
+    \cf3 let\cf0  m=S.selectedMonth, y=S.selectedYear, MS=initMonth(m,y), C=MS.cells;\
+\
+    S.activities.forEach((A,ri)=>\{\
+      \cf3 let\cf0  L=document.createElement(\cf5 "div"\cf0 );\
+      L.className=\cf5 "act-label"\cf0 ;\
+\
+      \cf3 let\cf0  nm=document.createElement(\cf5 "span"\cf0 );\
+      nm.className=\cf5 "act-name"\cf0 ;\
+      nm.contentEditable=\cf3 true\cf0 ;\
+      nm.textContent=A;\
+      nm.onblur=()=>\{S.activities[ri]=nm.textContent.trim()||(\cf5 "Activity "\cf0 +(ri+\cf6 1\cf0 )); save();\};\
+      L.appendChild(nm);\
+\
+      \cf3 let\cf0  del=document.createElement(\cf5 "button"\cf0 );\
+      del.textContent=\cf5 "X"\cf0 ; del.onclick=()=>delRow(ri);\
+      L.appendChild(del);\
+\
+      g.appendChild(L);\
+\
+      \cf3 for\cf0 (\cf3 let\cf0  d=\cf6 0\cf0 ;d<DAYS;d++)\{\
+        \cf3 let\cf0  id=ri+\cf5 "-"\cf0 +d;\
+        \cf3 let\cf0  c=document.createElement(\cf5 "div"\cf0 );\
+        c.className=\cf5 "cell"\cf0 ;\
+        \cf3 if\cf0 (C[id]) c.classList.add(\cf5 "active"\cf0 );\
+        c.onclick=()=>\{\
+          \cf3 let\cf0  on=c.classList.toggle(\cf5 "active"\cf0 );\
+          C[id]=on?\cf6 1\cf0 :\cf6 0\cf0 ; save();\
+        \};\
+        g.appendChild(c);\
+      \}\
+    \});\
+  \}\
+\
+  \cf3 function\cf0  delRow(ri)\{\
+    S.activities=S.activities.filter((_,i)=>i!==ri);\
+    Object.keys(S.months).forEach(k=>\{\
+      \cf3 let\cf0  old=S.months[k].cells, neo=\{\};\
+      Object.keys(old).forEach(id=>\{\
+        \cf3 let\cf0  [r,d]=id.split(\cf5 "-"\cf0 ).map(Number);\
+        \cf3 if\cf0 (r<ri) neo[id]=old[id];\
+        \cf3 else\cf0  \cf3 if\cf0 (r>ri) neo[(r-\cf6 1\cf0 )+\cf5 "-"\cf0 +d]=old[id];\
+      \});\
+      S.months[k].cells=neo;\
+    \});\
+    save(); buildGrid();\
+  \}\
+\
+  document.getElementById(\cf5 "addBtn"\cf0 ).onclick=()=>\{\
+    \cf3 let\cf0  v=document.getElementById(\cf5 "addInput"\cf0 ).value.trim();\
+    \cf3 if\cf0 (!v) \cf3 return\cf0 ;\
+    S.activities.push(v); save(); document.getElementById(\cf5 "addInput"\cf0 ).value=\cf5 ""\cf0 ;\
+    buildGrid();\
+  \};\
+\
+  document.getElementById(\cf5 "clearBtn"\cf0 ).onclick=()=>\{\
+    \cf3 if\cf0 (!confirm(\cf5 "Clear all checkmarks for this month?"\cf0 )) \cf3 return\cf0 ;\
+    \cf3 let\cf0  MS=initMonth(S.selectedMonth,S.selectedYear);\
+    MS.cells=\{\}; save(); buildGrid();\
+  \};\
+\
+  document.getElementById(\cf5 "monthLabel"\cf0 ).onchange=()=>\{\
+    \cf3 let\cf0  MS=initMonth(S.selectedMonth,S.selectedYear);\
+    MS.label=document.getElementById(\cf5 "monthLabel"\cf0 ).value; save();\
+  \};\
+\
+  document.getElementById(\cf5 "monthSelect"\cf0 ).onchange=changeMY;\
+  document.getElementById(\cf5 "yearSelect"\cf0 ).onchange=changeMY;\
+\
+  \cf3 function\cf0  changeMY()\{\
+    S.selectedMonth=parseInt(document.getElementById(\cf5 "monthSelect"\cf0 ).value);\
+    S.selectedYear=parseInt(document.getElementById(\cf5 "yearSelect"\cf0 ).value);\
+    \cf3 let\cf0  MS=initMonth(S.selectedMonth,S.selectedYear);\
+    document.getElementById(\cf5 "monthLabel"\cf0 ).value=MS.label;\
+    save(); buildGrid();\
+  \}\
+\
+  fillYears();\
+  document.getElementById(\cf5 "monthSelect"\cf0 ).value=S.selectedMonth;\
+  document.getElementById(\cf5 "yearSelect"\cf0 ).value=S.selectedYear;\
+  document.getElementById(\cf5 "monthLabel"\cf0 ).value=initMonth(S.selectedMonth,S.selectedYear).label;\
+\
+  buildDays();\
+  buildGrid();\
+\})();\
+\cf3 </script>\cf0 \
+\cf3 </body>\cf0 \
+\cf3 </html>}

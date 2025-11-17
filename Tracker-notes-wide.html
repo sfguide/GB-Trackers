@@ -1,0 +1,568 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;}
+{\colortbl;\red255\green255\blue255;\red135\green5\blue129;\red151\green0\blue126;\red111\green90\blue30;
+\red181\green0\blue19;\red20\green0\blue196;\red136\green93\blue48;\red13\green100\blue1;}
+{\*\expandedcolortbl;;\cssrgb\c60784\c13725\c57647;\cssrgb\c66667\c5098\c56863;\cssrgb\c51373\c42353\c15686;
+\cssrgb\c76863\c10196\c8627;\cssrgb\c10980\c0\c81176;\cssrgb\c60784\c43922\c24706;\cssrgb\c0\c45490\c0;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs20\fsmilli10010 \cf2 <!DOCTYPE \cf3 html\cf2 >\cf0 \
+\cf3 <html \cf4 lang\cf3 =\cf5 "en"\cf3 >\cf0 \
+\cf3 <head>\cf0 \
+  \cf3 <meta \cf4 charset\cf3 =\cf5 "UTF-8"\cf3  />\cf0 \
+  \cf3 <meta \cf4 name\cf3 =\cf5 "viewport"\cf3  \cf4 content\cf3 =\cf5 "width=device-width,initial-scale=1.0"\cf3  />\cf0 \
+  \cf3 <title>\cf0 Monthly Notes Grid (Wide)\cf3 </title>\cf0 \
+  \cf3 <style>\cf0 \
+    \cf3 body\cf0  \{\
+      \cf3 font-family\cf0 : -apple-system, BlinkMacSystemFont, \cf5 "Helvetica Neue"\cf0 , Arial, sans-serif;\
+      \cf3 margin\cf0 : \cf6 0\cf0 ;\
+      \cf3 padding\cf0 : \cf6 16px\cf0 ;\
+      \cf3 background\cf0 : \cf6 #f4f4f4\cf0 ;\
+    \}\
+    \cf7 .tracker-container\cf0  \{\
+      \cf3 max-width\cf0 : \cf6 1400px\cf0 ;\
+      \cf3 margin\cf0 : \cf6 0\cf0  auto;\
+      \cf3 background\cf0 : \cf6 #ffffff\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 12px\cf0 ;\
+      \cf3 padding\cf0 : \cf6 16px\cf0 ;\
+      \cf3 box-shadow\cf0 : \cf6 0\cf0  \cf6 2px\cf0  \cf6 6px\cf0  rgba(\cf6 0\cf0 ,\cf6 0\cf0 ,\cf6 0\cf0 ,\cf6 0.08\cf0 );\
+    \}\
+    \cf7 .tracker-title\cf0  \{\
+      \cf3 font-size\cf0 : \cf6 1.2rem\cf0 ;\
+      \cf3 font-weight\cf0 : \cf6 600\cf0 ;\
+      \cf3 margin-bottom\cf0 : \cf6 4px\cf0 ;\
+      \cf3 text-align\cf0 : center;\
+    \}\
+    \cf7 .tracker-subtitle\cf0  \{\
+      \cf3 font-size\cf0 : \cf6 0.9rem\cf0 ;\
+      \cf3 color\cf0 : \cf6 #666\cf0 ;\
+      \cf3 margin-bottom\cf0 : \cf6 12px\cf0 ;\
+      \cf3 text-align\cf0 : center;\
+    \}\
+    \cf7 .month-row\cf0  \{\
+      \cf3 display\cf0 : flex;\
+      \cf3 align-items\cf0 : center;\
+      \cf3 gap\cf0 : \cf6 8px\cf0 ;\
+      \cf3 margin-bottom\cf0 : \cf6 10px\cf0 ;\
+      \cf3 flex-wrap\cf0 : wrap;\
+      \cf3 justify-content\cf0 : center;\
+    \}\
+    \cf7 .month-row\cf0  \cf3 label\cf0  \{\
+      \cf3 font-size\cf0 : \cf6 0.85rem\cf0 ;\
+      \cf3 color\cf0 : \cf6 #444\cf0 ;\
+    \}\
+    \cf7 .month-row\cf0  \cf3 select\cf0 ,\
+    \cf7 .month-row\cf0  \cf3 input\cf0  \{\
+      \cf3 padding\cf0 : \cf6 6px\cf0  \cf6 8px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.9rem\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 6px\cf0 ;\
+      \cf3 border\cf0 : \cf6 1px\cf0  solid \cf6 #ccc\cf0 ;\
+    \}\
+    \cf7 .month-row\cf0  \cf3 input\cf0  \{\
+      \cf3 min-width\cf0 : \cf6 200px\cf0 ;\
+    \}\
+    \cf7 .tracker-controls\cf0  \{\
+      \cf3 display\cf0 : flex;\
+      \cf3 justify-content\cf0 : space-between;\
+      \cf3 align-items\cf0 : center;\
+      \cf3 margin-bottom\cf0 : \cf6 10px\cf0 ;\
+      \cf3 gap\cf0 : \cf6 8px\cf0 ;\
+      \cf3 flex-wrap\cf0 : wrap;\
+    \}\
+    \cf7 .tracker-controls\cf0  \cf3 button\cf0  \{\
+      \cf3 padding\cf0 : \cf6 6px\cf0  \cf6 10px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.9rem\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 6px\cf0 ;\
+      \cf3 border\cf0 : none;\
+      \cf3 background\cf0 : \cf6 #eee\cf0 ;\
+      \cf3 cursor\cf0 : pointer;\
+    \}\
+    \cf7 .tracker-controls\cf0  \cf3 button\cf0 :active \{\
+      \cf3 transform\cf0 : scale(\cf6 0.98\cf0 );\
+    \}\
+    \cf7 .activity-add\cf0  \{\
+      \cf3 display\cf0 : flex;\
+      \cf3 align-items\cf0 : center;\
+      \cf3 gap\cf0 : \cf6 6px\cf0 ;\
+      \cf3 margin-bottom\cf0 : \cf6 10px\cf0 ;\
+      \cf3 flex-wrap\cf0 : wrap;\
+    \}\
+    \cf7 .activity-add\cf0  \cf3 input\cf0  \{\
+      \cf3 flex\cf0 : \cf6 1\cf0 ;\
+      \cf3 min-width\cf0 : \cf6 200px\cf0 ;\
+      \cf3 padding\cf0 : \cf6 6px\cf0  \cf6 8px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.9rem\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 6px\cf0 ;\
+      \cf3 border\cf0 : \cf6 1px\cf0  solid \cf6 #ccc\cf0 ;\
+    \}\
+    \cf7 .activity-add\cf0  \cf3 button\cf0  \{\
+      \cf3 padding\cf0 : \cf6 6px\cf0  \cf6 10px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.9rem\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 6px\cf0 ;\
+      \cf3 border\cf0 : none;\
+      \cf3 background\cf0 : \cf6 #e0e0e0\cf0 ;\
+      \cf3 cursor\cf0 : pointer;\
+    \}\
+    \cf7 .activity-add\cf0  \cf3 button\cf0 :active \{\
+      \cf3 transform\cf0 : scale(\cf6 0.98\cf0 );\
+    \}\
+\
+    \cf8 /* Header row (Activity + Day numbers) */\cf0 \
+    \cf7 .tracker-labels\cf0  \{\
+      \cf3 display\cf0 : grid;\
+      \cf3 grid-auto-rows\cf0 : \cf6 28px\cf0 ;\
+      \cf3 grid-template-columns\cf0 : \cf6 200px\cf0  repeat(\cf6 31\cf0 , \cf6 70px\cf0 );\
+      \cf3 align-items\cf0 : center;\
+      \cf3 font-size\cf0 : \cf6 0.7rem\cf0 ;\
+      \cf3 font-weight\cf0 : \cf6 600\cf0 ;\
+      \cf3 margin-bottom\cf0 : \cf6 4px\cf0 ;\
+      \cf3 min-width\cf0 : max-content;\
+    \}\
+    \cf7 .tracker-labels\cf0  \cf3 div\cf0  \{\
+      \cf3 padding\cf0 : \cf6 4px\cf0 ;\
+      \cf3 text-align\cf0 : center;\
+      \cf3 box-sizing\cf0 : border-box;\
+    \}\
+    \cf7 .row-label-header\cf0  \{\
+      \cf3 text-align\cf0 : left;\
+    \}\
+\
+    \cf7 .tracker-grid-wrapper\cf0  \{\
+      \cf3 overflow-x\cf0 : auto;\
+      -webkit-\cf3 overflow\cf0 -scrolling: touch;\
+    \}\
+    \cf7 .tracker-grid\cf0  \{\
+      \cf3 display\cf0 : grid;\
+      \cf3 grid-auto-rows\cf0 : \cf6 60px\cf0 ; \cf8 /* taller for multi-line notes */\cf0 \
+      \cf3 grid-template-columns\cf0 : \cf6 200px\cf0  repeat(\cf6 31\cf0 , \cf6 70px\cf0 );\
+      \cf3 gap\cf0 : \cf6 4px\cf0 ;\
+      \cf3 min-width\cf0 : max-content;\
+    \}\
+\
+    \cf7 .row-label\cf0  \{\
+      \cf3 display\cf0 : flex;\
+      \cf3 align-items\cf0 : center;\
+      \cf3 justify-content\cf0 : space-between;\
+      \cf3 padding\cf0 : \cf6 0\cf0  \cf6 4px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.85rem\cf0 ;\
+      \cf3 color\cf0 : \cf6 #555\cf0 ;\
+      \cf3 box-sizing\cf0 : border-box;\
+      \cf3 gap\cf0 : \cf6 4px\cf0 ;\
+    \}\
+    \cf7 .activity-name\cf0  \{\
+      \cf3 flex\cf0 : \cf6 1\cf0 ;\
+      \cf3 outline\cf0 : none;\
+      \cf3 border-radius\cf0 : \cf6 4px\cf0 ;\
+      \cf3 padding\cf0 : \cf6 2px\cf0  \cf6 4px\cf0 ;\
+    \}\
+    \cf7 .activity-name\cf0 [contenteditable=\cf5 "true"\cf0 ]:focus \{\
+      \cf3 background\cf0 : \cf6 #f0f0f0\cf0 ;\
+    \}\
+    \cf7 .row-buttons\cf0  \{\
+      \cf3 display\cf0 : flex;\
+      \cf3 gap\cf0 : \cf6 4px\cf0 ;\
+      \cf3 flex-shrink\cf0 : \cf6 0\cf0 ;\
+    \}\
+    \cf7 .row-button\cf0  \{\
+      \cf3 border\cf0 : none;\
+      \cf3 background\cf0 : \cf6 #eee\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 4px\cf0 ;\
+      \cf3 padding\cf0 : \cf6 2px\cf0  \cf6 6px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.7rem\cf0 ;\
+      \cf3 cursor\cf0 : pointer;\
+    \}\
+    \cf7 .row-button.delete\cf0  \{\
+      \cf3 background\cf0 : \cf6 #f8d7da\cf0 ;\
+    \}\
+    \cf7 .row-button\cf0 :active \{\
+      \cf3 transform\cf0 : scale(\cf6 0.95\cf0 );\
+    \}\
+\
+    \cf7 .cell\cf0  \{\
+      \cf3 background\cf0 : \cf6 #fafafa\cf0 ;\
+      \cf3 border-radius\cf0 : \cf6 6px\cf0 ;\
+      \cf3 border\cf0 : \cf6 1px\cf0  solid \cf6 #ddd\cf0 ;\
+      \cf3 display\cf0 : flex;\
+      \cf3 align-items\cf0 : stretch;\
+      \cf3 justify-content\cf0 : center;\
+      \cf3 box-sizing\cf0 : border-box;\
+      \cf3 padding\cf0 : \cf6 0\cf0 ;\
+    \}\
+    \cf7 .cell-textarea\cf0  \{\
+      \cf3 width\cf0 : \cf6 100%\cf0 ;\
+      \cf3 height\cf0 : \cf6 100%\cf0 ;\
+      \cf3 border\cf0 : none;\
+      \cf3 background\cf0 : transparent;\
+      \cf3 resize\cf0 : none;\
+      \cf3 font-size\cf0 : \cf6 0.7rem\cf0 ;\
+      \cf3 padding\cf0 : \cf6 4px\cf0 ;\
+      \cf3 box-sizing\cf0 : border-box;\
+      \cf3 outline\cf0 : none;\
+    \}\
+    \cf7 .cell-textarea\cf0 ::placeholder \{\
+      \cf3 color\cf0 : \cf6 #bbb\cf0 ;\
+    \}\
+\
+    \cf7 .tracker-footer\cf0  \{\
+      \cf3 margin-top\cf0 : \cf6 10px\cf0 ;\
+      \cf3 font-size\cf0 : \cf6 0.75rem\cf0 ;\
+      \cf3 color\cf0 : \cf6 #777\cf0 ;\
+      \cf3 text-align\cf0 : center;\
+    \}\
+  \cf3 </style>\cf0 \
+\cf3 </head>\cf0 \
+\cf3 <body>\cf0 \
+  \cf3 <div \cf4 class\cf3 =\cf5 "tracker-container"\cf3 >\cf0 \
+    \cf3 <div \cf4 class\cf3 =\cf5 "tracker-title"\cf3 >\cf0 Monthly Notes Grid (Wide)\cf3 </div>\cf0 \
+    \cf3 <div \cf4 class\cf3 =\cf5 "tracker-subtitle"\cf3 >\cf0 \
+      Select a month, add activities, then write more detailed notes in each day. Each month\'92s notes are saved separately on this device.\
+    \cf3 </div>\cf0 \
+\
+    \cf3 <div \cf4 class\cf3 =\cf5 "month-row"\cf3 >\cf0 \
+      \cf3 <label \cf4 for\cf3 =\cf5 "monthSelect"\cf3 >\cf0 Month:\cf3 </label>\cf0 \
+      \cf3 <select \cf4 id\cf3 =\cf5 "monthSelect"\cf3 >\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "0"\cf3 >\cf0 January\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "1"\cf3 >\cf0 February\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "2"\cf3 >\cf0 March\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "3"\cf3 >\cf0 April\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "4"\cf3 >\cf0 May\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "5"\cf3 >\cf0 June\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "6"\cf3 >\cf0 July\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "7"\cf3 >\cf0 August\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "8"\cf3 >\cf0 September\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "9"\cf3 >\cf0 October\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "10"\cf3 >\cf0 November\cf3 </option>\cf0 \
+        \cf3 <option \cf4 value\cf3 =\cf5 "11"\cf3 >\cf0 December\cf3 </option>\cf0 \
+      \cf3 </select>\cf0 \
+\
+      \cf3 <label \cf4 for\cf3 =\cf5 "yearSelect"\cf3 >\cf0 Year:\cf3 </label>\cf0 \
+      \cf3 <select \cf4 id\cf3 =\cf5 "yearSelect"\cf3 ></select>\cf0 \
+\
+      \cf3 <label \cf4 for\cf3 =\cf5 "monthInput"\cf3 >\cf0 Label:\cf3 </label>\cf0 \
+      \cf3 <input\
+        \cf4 id\cf3 =\cf5 "monthInput"\cf3 \
+        \cf4 type\cf3 =\cf5 "text"\cf3 \
+        \cf4 placeholder\cf3 =\cf5 "e.g., November 2025"\cf3 \
+      />\cf0 \
+    \cf3 </div>\cf0 \
+\
+    \cf3 <div \cf4 class\cf3 =\cf5 "tracker-controls"\cf3 >\cf0 \
+      \cf3 <div \cf4 class\cf3 =\cf5 "activity-add"\cf3 >\cf0 \
+        \cf3 <input\
+          \cf4 id\cf3 =\cf5 "newActivityInput"\cf3 \
+          \cf4 type\cf3 =\cf5 "text"\cf3 \
+          \cf4 placeholder\cf3 =\cf5 "Add a new activity (row)\'85"\cf3 \
+        />\cf0 \
+        \cf3 <button \cf4 id\cf3 =\cf5 "addActivityBtn"\cf3 >\cf0 Add Row\cf3 </button>\cf0 \
+      \cf3 </div>\cf0 \
+      \cf3 <button \cf4 id\cf3 =\cf5 "resetBtn"\cf3 >\cf0 Clear This Month\cf3 </button>\cf0 \
+    \cf3 </div>\cf0 \
+\
+    \cf3 <div \cf4 id\cf3 =\cf5 "dayLabels"\cf3  \cf4 class\cf3 =\cf5 "tracker-labels"\cf3 ></div>\cf0 \
+\
+    \cf3 <div \cf4 class\cf3 =\cf5 "tracker-grid-wrapper"\cf3 >\cf0 \
+      \cf3 <div \cf4 id\cf3 =\cf5 "trackerGrid"\cf3  \cf4 class\cf3 =\cf5 "tracker-grid"\cf3 ></div>\cf0 \
+    \cf3 </div>\cf0 \
+\
+    \cf3 <div \cf4 class\cf3 =\cf5 "tracker-footer"\cf3 >\cf0 \
+      Tip: This layout is better for journaling or comments per day. Each month has its own notes.\
+    \cf3 </div>\cf0 \
+  \cf3 </div>\cf0 \
+\
+  \cf3 <script>\cf0 \
+    (\cf3 function\cf0  () \{\
+      \cf3 const\cf0  DAYS = \cf6 31\cf0 ;\
+\
+      \cf3 const\cf0  DEFAULT_ACTIVITIES = [\
+        \cf5 "Gratitude / Wins"\cf0 ,\
+        \cf5 "Mood / Energy"\cf0 ,\
+        \cf5 "Movement / Exercise"\cf0 ,\
+        \cf5 "Food Notes"\cf0 ,\
+        \cf5 "Sleep Notes"\cf0 \
+      ];\
+\
+      \cf8 // Storage structure:\cf0 \
+      \cf8 // \{\cf0 \
+      \cf8 //   selectedMonth: number,\cf0 \
+      \cf8 //   selectedYear: number,\cf0 \
+      \cf8 //   activities: string[],\cf0 \
+      \cf8 //   months: \{ "YYYY-MM": \{ label: string, cells: \{ "rowIndex-dayIndex": "text" \} \} \}\cf0 \
+      \cf8 // \}\cf0 \
+      \cf3 const\cf0  STORAGE_KEY = \cf5 "gb-notes-grid-wide-31days-per-month-v1"\cf0 ;\
+\
+      \cf3 const\cf0  monthNames = [\
+        \cf5 "January"\cf0 ,\cf5 "February"\cf0 ,\cf5 "March"\cf0 ,\cf5 "April"\cf0 ,\cf5 "May"\cf0 ,\cf5 "June"\cf0 ,\
+        \cf5 "July"\cf0 ,\cf5 "August"\cf0 ,\cf5 "September"\cf0 ,\cf5 "October"\cf0 ,\cf5 "November"\cf0 ,\cf5 "December"\cf0 \
+      ];\
+\
+      \cf3 const\cf0  monthSelect = document.getElementById(\cf5 "monthSelect"\cf0 );\
+      \cf3 const\cf0  yearSelect = document.getElementById(\cf5 "yearSelect"\cf0 );\
+      \cf3 const\cf0  monthInput = document.getElementById(\cf5 "monthInput"\cf0 );\
+      \cf3 const\cf0  dayLabels = document.getElementById(\cf5 "dayLabels"\cf0 );\
+      \cf3 const\cf0  trackerGrid = document.getElementById(\cf5 "trackerGrid"\cf0 );\
+      \cf3 const\cf0  resetBtn = document.getElementById(\cf5 "resetBtn"\cf0 );\
+      \cf3 const\cf0  newActivityInput = document.getElementById(\cf5 "newActivityInput"\cf0 );\
+      \cf3 const\cf0  addActivityBtn = document.getElementById(\cf5 "addActivityBtn"\cf0 );\
+\
+      \cf3 let\cf0  appState = loadState();\
+\
+      \cf3 function\cf0  getMonthKey(m, y) \{\
+        \cf3 return\cf0  y + \cf5 "-"\cf0  + String(m + \cf6 1\cf0 ).padStart(\cf6 2\cf0 , \cf5 "0"\cf0 );\
+      \}\
+\
+      \cf3 function\cf0  ensureMonthState(m, y) \{\
+        \cf3 const\cf0  key = getMonthKey(m, y);\
+        \cf3 if\cf0  (!appState.months[key]) \{\
+          appState.months[key] = \{\
+            \cf4 label\cf0 : monthNames[m] + \cf5 " "\cf0  + y,\
+            \cf4 cells\cf0 : \{\}\
+          \};\
+          saveState();\
+        \}\
+        \cf3 return\cf0  appState.months[key];\
+      \}\
+\
+      \cf3 function\cf0  loadState() \{\
+        \cf3 try\cf0  \{\
+          \cf3 const\cf0  raw = localStorage.getItem(STORAGE_KEY);\
+          \cf3 const\cf0  parsed = raw ? JSON.parse(raw) : \{\};\
+          \cf3 const\cf0  now = \cf3 new\cf0  Date();\
+\
+          \cf3 if\cf0  (\cf3 typeof\cf0  parsed.selectedMonth !== \cf5 "number"\cf0  || parsed.selectedMonth < \cf6 0\cf0  || parsed.selectedMonth > \cf6 11\cf0 ) \{\
+            parsed.selectedMonth = now.getMonth();\
+          \}\
+          \cf3 if\cf0  (\cf3 typeof\cf0  parsed.selectedYear !== \cf5 "number"\cf0 ) \{\
+            parsed.selectedYear = now.getFullYear();\
+          \}\
+          \cf3 if\cf0  (!Array.isArray(parsed.activities) || parsed.activities.length === \cf6 0\cf0 ) \{\
+            parsed.activities = DEFAULT_ACTIVITIES.slice();\
+          \}\
+          \cf3 if\cf0  (!parsed.months || \cf3 typeof\cf0  parsed.months !== \cf5 "object"\cf0 ) \{\
+            parsed.months = \{\};\
+          \}\
+\
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));\
+          \cf3 return\cf0  parsed;\
+        \} \cf3 catch\cf0  (e) \{\
+          \cf3 const\cf0  now = \cf3 new\cf0  Date();\
+          \cf3 return\cf0  \{\
+            \cf4 selectedMonth\cf0 : now.getMonth(),\
+            \cf4 selectedYear\cf0 : now.getFullYear(),\
+            \cf4 activities\cf0 : DEFAULT_ACTIVITIES.slice(),\
+            \cf4 months\cf0 : \{\}\
+          \};\
+        \}\
+      \}\
+\
+      \cf3 function\cf0  saveState() \{\
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));\
+      \}\
+\
+      \cf3 function\cf0  initYearSelect() \{\
+        \cf3 const\cf0  currentYear = \cf3 new\cf0  Date().getFullYear();\
+        \cf3 const\cf0  startYear = currentYear - \cf6 3\cf0 ;\
+        \cf3 const\cf0  endYear = currentYear + \cf6 3\cf0 ;\
+\
+        yearSelect.innerHTML = \cf5 ""\cf0 ;\
+        \cf3 for\cf0  (\cf3 let\cf0  y = startYear; y <= endYear; y++) \{\
+          \cf3 const\cf0  opt = document.createElement(\cf5 "option"\cf0 );\
+          opt.value = y;\
+          opt.textContent = y;\
+          yearSelect.appendChild(opt);\
+        \}\
+      \}\
+\
+      \cf3 function\cf0  setMonthYearControlsFromState() \{\
+        monthSelect.value = String(appState.selectedMonth);\
+        yearSelect.value = String(appState.selectedYear);\
+\
+        \cf3 const\cf0  monthState = ensureMonthState(appState.selectedMonth, appState.selectedYear);\
+        monthInput.value = monthState.label || (monthNames[appState.selectedMonth] + \cf5 " "\cf0  + appState.selectedYear);\
+      \}\
+\
+      \cf3 function\cf0  updateMonthLabelFromInput() \{\
+        \cf3 const\cf0  m = appState.selectedMonth;\
+        \cf3 const\cf0  y = appState.selectedYear;\
+        \cf3 const\cf0  key = getMonthKey(m, y);\
+        \cf3 const\cf0  monthState = ensureMonthState(m, y);\
+        monthState.label = monthInput.value.trim() || (monthNames[m] + \cf5 " "\cf0  + y);\
+        appState.months[key] = monthState;\
+        saveState();\
+      \}\
+\
+      \cf3 function\cf0  handleMonthYearChange() \{\
+        \cf3 const\cf0  m = parseInt(monthSelect.value, \cf6 10\cf0 );\
+        \cf3 const\cf0  y = parseInt(yearSelect.value, \cf6 10\cf0 );\
+        \cf3 if\cf0  (!isNaN(m)) appState.selectedMonth = m;\
+        \cf3 if\cf0  (!isNaN(y)) appState.selectedYear = y;\
+\
+        ensureMonthState(appState.selectedMonth, appState.selectedYear);\
+\
+        setMonthYearControlsFromState();\
+        saveState();\
+        buildGrid();\
+      \}\
+\
+      \cf3 function\cf0  initMonthInput() \{\
+        monthInput.addEventListener(\cf5 "blur"\cf0 , updateMonthLabelFromInput);\
+        monthInput.addEventListener(\cf5 "change"\cf0 , updateMonthLabelFromInput);\
+      \}\
+\
+      \cf3 function\cf0  buildDayLabels() \{\
+        dayLabels.innerHTML = \cf5 ""\cf0 ;\
+\
+        \cf3 const\cf0  header = document.createElement(\cf5 "div"\cf0 );\
+        header.className = \cf5 "row-label-header"\cf0 ;\
+        header.textContent = \cf5 "Activity"\cf0 ;\
+        dayLabels.appendChild(header);\
+\
+        \cf3 for\cf0  (\cf3 let\cf0  d = \cf6 1\cf0 ; d <= DAYS; d++) \{\
+          \cf3 const\cf0  dDiv = document.createElement(\cf5 "div"\cf0 );\
+          dDiv.textContent = d;\
+          dayLabels.appendChild(dDiv);\
+        \}\
+      \}\
+\
+      \cf3 function\cf0  buildGrid() \{\
+        trackerGrid.innerHTML = \cf5 ""\cf0 ;\
+\
+        \cf3 const\cf0  m = appState.selectedMonth;\
+        \cf3 const\cf0  y = appState.selectedYear;\
+        \cf3 const\cf0  monthState = ensureMonthState(m, y);\
+        \cf3 const\cf0  cells = monthState.cells;\
+\
+        appState.activities.forEach((activity, rowIndex) => \{\
+          \cf3 const\cf0  rowLabel = document.createElement(\cf5 "div"\cf0 );\
+          rowLabel.className = \cf5 "row-label"\cf0 ;\
+\
+          \cf3 const\cf0  nameSpan = document.createElement(\cf5 "span"\cf0 );\
+          nameSpan.className = \cf5 "activity-name"\cf0 ;\
+          nameSpan.contentEditable = \cf5 "true"\cf0 ;\
+          nameSpan.textContent = activity;\
+          nameSpan.dataset.rowIndex = rowIndex;\
+\
+          nameSpan.addEventListener(\cf5 "blur"\cf0 , \cf3 function\cf0  () \{\
+            \cf3 const\cf0  idx = parseInt(this.dataset.rowIndex, \cf6 10\cf0 );\
+            \cf3 let\cf0  newName = this.textContent.trim();\
+            \cf3 if\cf0  (!newName) \{\
+              newName = \cf5 "Activity "\cf0  + (idx + \cf6 1\cf0 );\
+              this.textContent = newName;\
+            \}\
+            appState.activities[idx] = newName;\
+            saveState();\
+          \});\
+\
+          \cf3 const\cf0  buttonsDiv = document.createElement(\cf5 "div"\cf0 );\
+          buttonsDiv.className = \cf5 "row-buttons"\cf0 ;\
+\
+          \cf3 const\cf0  deleteBtn = document.createElement(\cf5 "button"\cf0 );\
+          deleteBtn.className = \cf5 "row-button delete"\cf0 ;\
+          deleteBtn.textContent = \cf5 "Delete"\cf0 ;\
+          deleteBtn.dataset.rowIndex = rowIndex;\
+\
+          deleteBtn.addEventListener(\cf5 "click"\cf0 , \cf3 function\cf0  () \{\
+            \cf3 const\cf0  idx = parseInt(this.dataset.rowIndex, \cf6 10\cf0 );\
+            \cf3 if\cf0  (!confirm(\cf5 "Delete this activity row?"\cf0 )) \cf3 return\cf0 ;\
+            deleteActivityRow(idx);\
+          \});\
+\
+          buttonsDiv.appendChild(deleteBtn);\
+          rowLabel.appendChild(nameSpan);\
+          rowLabel.appendChild(buttonsDiv);\
+          trackerGrid.appendChild(rowLabel);\
+\
+          \cf3 for\cf0  (\cf3 let\cf0  dayIndex = \cf6 0\cf0 ; dayIndex < DAYS; dayIndex++) \{\
+            \cf3 const\cf0  cell = document.createElement(\cf5 "div"\cf0 );\
+            \cf3 const\cf0  id = rowIndex + \cf5 "-"\cf0  + dayIndex;\
+            cell.className = \cf5 "cell"\cf0 ;\
+\
+            \cf3 const\cf0  textarea = document.createElement(\cf5 "textarea"\cf0 );\
+            textarea.className = \cf5 "cell-textarea"\cf0 ;\
+            textarea.rows = \cf6 3\cf0 ;\
+            textarea.dataset.id = id;\
+            textarea.value = cells[id] || \cf5 ""\cf0 ;\
+            textarea.placeholder = \cf5 ""\cf0 ;\
+\
+            textarea.addEventListener(\cf5 "input"\cf0 , \cf3 function\cf0  () \{\
+              \cf3 const\cf0  cellId = this.dataset.id;\
+              monthState.cells[cellId] = this.value;\
+              saveState();\
+            \});\
+\
+            cell.appendChild(textarea);\
+            trackerGrid.appendChild(cell);\
+          \}\
+        \});\
+      \}\
+\
+      \cf3 function\cf0  deleteActivityRow(rowIndex) \{\
+        appState.activities = appState.activities.filter((_, i) => i !== rowIndex);\
+\
+        \cf8 // Adjust cells in ALL months, since rows are shared\cf0 \
+        Object.keys(appState.months).forEach((key) => \{\
+          \cf3 const\cf0  monthState = appState.months[key];\
+          \cf3 const\cf0  oldCells = monthState.cells || \{\};\
+          \cf3 const\cf0  newCells = \{\};\
+          Object.keys(oldCells).forEach((cellKey) => \{\
+            \cf3 const\cf0  [rStr, dStr] = cellKey.split(\cf5 "-"\cf0 );\
+            \cf3 const\cf0  r = parseInt(rStr, \cf6 10\cf0 );\
+            \cf3 const\cf0  d = parseInt(dStr, \cf6 10\cf0 );\
+            \cf3 if\cf0  (isNaN(r) || isNaN(d)) \cf3 return\cf0 ;\
+\
+            \cf3 if\cf0  (r < rowIndex) \{\
+              newCells[r + \cf5 "-"\cf0  + d] = oldCells[cellKey];\
+            \} \cf3 else\cf0  \cf3 if\cf0  (r > rowIndex) \{\
+              \cf3 const\cf0  newR = r - \cf6 1\cf0 ;\
+              newCells[newR + \cf5 "-"\cf0  + d] = oldCells[cellKey];\
+            \}\
+          \});\
+          monthState.cells = newCells;\
+        \});\
+\
+        saveState();\
+        buildGrid();\
+      \}\
+\
+      \cf3 function\cf0  addActivity() \{\
+        \cf3 const\cf0  name = newActivityInput.value.trim();\
+        \cf3 if\cf0  (!name) \cf3 return\cf0 ;\
+        appState.activities.push(name);\
+        newActivityInput.value = \cf5 ""\cf0 ;\
+        saveState();\
+        buildGrid();\
+      \}\
+\
+      \cf3 function\cf0  clearCurrentMonthCells() \{\
+        \cf3 const\cf0  m = appState.selectedMonth;\
+        \cf3 const\cf0  y = appState.selectedYear;\
+        \cf3 const\cf0  monthState = ensureMonthState(m, y);\
+        monthState.cells = \{\};\
+        saveState();\
+        buildGrid();\
+      \}\
+\
+      addActivityBtn.addEventListener(\cf5 "click"\cf0 , addActivity);\
+      newActivityInput.addEventListener(\cf5 "keyup"\cf0 , \cf3 function\cf0  (e) \{\
+        \cf3 if\cf0  (e.key === \cf5 "Enter"\cf0 ) \{\
+          addActivity();\
+        \}\
+      \});\
+\
+      resetBtn.addEventListener(\cf5 "click"\cf0 , \cf3 function\cf0  () \{\
+        \cf3 if\cf0  (!confirm(\cf5 "Clear all notes for this month?"\cf0 )) \cf3 return\cf0 ;\
+        clearCurrentMonthCells();\
+      \});\
+\
+      monthSelect.addEventListener(\cf5 "change"\cf0 , handleMonthYearChange);\
+      yearSelect.addEventListener(\cf5 "change"\cf0 , handleMonthYearChange);\
+\
+      initYearSelect();\
+      setMonthYearControlsFromState();\
+      initMonthInput();\
+      buildDayLabels();\
+      buildGrid();\
+    \})();\
+  \cf3 </script>\cf0 \
+\cf3 </body>\cf0 \
+\cf3 </html>}
