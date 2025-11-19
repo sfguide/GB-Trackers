@@ -34,6 +34,11 @@
     text-align:center;
     min-width:max-content;
   }
+  .days div:first-child {
+    text-align: left;
+    padding-left: 4px;
+    font-weight: bold;
+  }
   .grid {
     display:grid;
     grid-template-columns:160px repeat(31,20px);
@@ -78,7 +83,7 @@
   </div>
 
   <div class="add-row">
-    <input id="addInput" placeholder="Add a new activity…">
+    <input id="addInput" placeholder="Add a new activity…" maxlength="40">
     <button id="addBtn">Add Row</button>
     <button id="clearBtn">Clear This Month</button>
   </div>
