@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>My Local Calendar</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f4f4f4;
+    }
+
+    .calendar-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .calendar-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .calendar-subtitle {
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .month-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .month-row label {
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .month-row select,
+    .month-row input {
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .month-row input {
+      min-width: 180px;
+    }
+
+    .days-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: calc(100vh - 250px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+    }
+
+    .day-card {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #fafafa;
+    }
+
+    .day-label {
+      flex-shrink: 0;
+      width: 52px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .day-label-number {
+      display: inline-block;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .day-label-weekday {
+      font-size: 0.7rem;
+      color: #888;
+    }
+
+    .day-notes {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .day-notes textarea {
+      width: 100%;
+      min-height: 48px;
+      max-height: 150px;
+      resize: vertical;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .day-notes textarea:focus {
+      border-color: #4caf50;
+      box-shadow: 0 0 0 1px rgba(76,175,80,0.15);
+    }
+
+    .day-hint {
+      font-size: 0.7rem;
+      color: #999;
+    }
+
+    .calendar-footer {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #777;
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .day-card {
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar-container">
+    <div class="calendar-title">My Local Calendar</div>
+    <div class="calendar-subtitle">
+      Select a month and add notes or plans for each day. Everything is saved locally on this device.
+    </div>
+
+    <!-- Month controls -->
+    <div class="month-row">
+      <label for="monthSelect">Month:</label>
+      <select id="monthSelect">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+
+      <label for="yearSelect">Year:</label>
+      <select id="yearSelect"></select>
+
+      <label for="monthLabel">Label:</label>
+      <input
+        id="monthLabel"
+        type="text"
+        placeholder="e.g., November 2025 – Goals & Plans"
+      />
+    </div>
+
+    <!-- Days + notes -->
+    <div id="daysList" class="days-list"></div>
+
+    <div class="calendar-footer">
+      Notes are private to this device and not synced with any online account.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "gb-local-calendar-v1";
+
+      const monthSelect = document.getElementById("monthSelect");
+      const yearSelect = document.getElementById("yearSelect");
+      const monthLabelInput = document.getElementById("monthLabel");
+      const daysList = document.getElementById("daysList");
+
+      const MONTH_NAMES = [
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+      ];
+      const WEEKDAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+      // State shape:
+      // {
+      //   selectedMonth: number,
+      //   selectedYear: number,
+      //   months: {
+      //     "YYYY-MM": {
+      //       label: string,
+      //       days: { "DD": string } // note text per day
+      //     }
+      //   }
+      // }
+      let appState = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          const now = new Date();
+
+          if (typeof parsed.selectedMonth !== "number" || parsed.selectedMonth < 0 || parsed.selectedMonth > 11) {
+            parsed.selectedMonth = now.getMonth();
+          }
+          if (typeof parsed.selectedYear !== "number") {
+            parsed.selectedYear = now.getFullYear();
+          }
+          if (!parsed.months || typeof parsed.months !== "object") {
+            parsed.months = {};
+          }
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+          return parsed;
+        } catch (e) {
+          const now = new Date();
+          return {
+            selectedMonth: now.getMonth(),
+            selectedYear: now.getFullYear(),
+            months: {}
+          };
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      }
+
+      function getMonthKey(m, y) {
+        return y + "-" + String(m + 1).padStart(2, "0");
+      }
+
+      function ensureMonthState(m, y) {
+        const key = getMonthKey(m, y);
+        if (!appState.months[key]) {
+          appState.months[key] = {
+            label: MONTH_NAMES[m] + " " + y,
+            days: {}
+          };
+          saveState();
+        }
+        return appState.months[key];
+      }
+
+      function initYearSelect() {
+        const currentYear = new Date().getFullYear();
+        const start = currentYear - 3;
+        const end = currentYear + 3;
+        yearSelect.innerHTML = "";
+        for (let y = start; y <= end; y++) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          yearSelect.appendChild(opt);
+        }
+      }
+
+      function setControlsFromState() {
+        monthSelect.value = String(appState.selectedMonth);
+        yearSelect.value = String(appState.selectedYear);
+        const monthState = ensureMonthState(appState.selectedMonth, appState.selectedYear);
+        monthLabelInput.value =
+          monthState.label || (MONTH_NAMES[appState.selectedMonth] + " " + appState.selectedYear);
+      }
+
+      function updateMonthLabelFromInput() {
+        const m = appState.selectedMonth;
+        const y = appState.selectedYear;
+        const key = getMonthKey(m, y);
+        const monthState = ensureMonthState(m, y);
+        monthState.label =
+          monthLabelInput.value.trim() || (MONTH_NAMES[m] + " " + y);
+        appState.months[key] = monthState;
+        saveState();
+      }
+
+      function handleMonthYearChange() {
+        const m = parseInt(monthSelect.value, 10);
+        const y = parseInt(yearSelect.value, 10);
+        if (!isNaN(m)) appState.selectedMonth = m;
+        if (!isNaN(y)) appState.selectedYear = y;
+        ensureMonthState(appState.selectedMonth, appState.selectedYear);
+        setControlsFromState();
+        saveState();
+        buildDaysList();
+      }
+
+      function getDaysInMonth(m, y) {
+        // m is 0-based; construct date for next month, day 0
+        return new Date(y, m + 1, 0).getDate();
+      }
+
+      function buildDaysList() {
+        daysList.innerHTML = "";
+
+        const m = appState.selectedMonth;
+        const y = appState.selectedYear;
+        const monthState = ensureMonthState(m, y);
+        const daysData = monthState.days || {};
+
+        const daysInMonth = getDaysInMonth(m, y);
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayKey = String(day).padStart(2, "0");
+          const dateObj = new Date(y, m, day);
+          const weekday = WEEKDAY_NAMES[dateObj.getDay()];
+
+          const card = document.createElement("div");
+          card.className = "day-card";
+
+          const label = document.createElement("div");
+          label.className = "day-label";
+
+          const numberSpan = document.createElement("div");
+          numberSpan.className = "day-label-number";
+          numberSpan.textContent = day;
+
+          const weekdaySpan = document.createElement("div");
+          weekdaySpan.className = "day-label-weekday";
+          weekdaySpan.textContent = weekday;
+
+          label.appendChild(numberSpan);
+          label.appendChild(weekdaySpan);
+
+          const notesWrapper = document.createElement("div");
+          notesWrapper.className = "day-notes";
+
+          const textarea = document.createElement("textarea");
+          textarea.dataset.dayKey = dayKey;
+          textarea.value = daysData[dayKey] || "";
+          textarea.placeholder = "Plans, reminders, or notes for this day…";
+
+          textarea.addEventListener("input", function () {
+            const key = this.dataset.dayKey;
+            monthState.days[key] = this.value;
+            saveState();
+          });
+
+          const hint = document.createElement("div");
+          hint.className = "day-hint";
+          hint.textContent = "Saved locally as you type.";
+
+          notesWrapper.appendChild(textarea);
+          notesWrapper.appendChild(hint);
+
+          card.appendChild(label);
+          card.appendChild(notesWrapper);
+
+          daysList.appendChild(card);
+        }
+      }
+
+      // --- Wire up events ---
+      monthSelect.addEventListener("change", handleMonthYearChange);
+      yearSelect.addEventListener("change", handleMonthYearChange);
+
+      monthLabelInput.addEventListener("blur", updateMonthLabelFromInput);
+      monthLabelInput.addEventListener("change", updateMonthLabelFromInput);
+
+      // --- Init ---
+      initYearSelect();
+      setControlsFromState();
+      buildDaysList();
+    })();
+  </script>
+</body>
+</html>
