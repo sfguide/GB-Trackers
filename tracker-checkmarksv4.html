@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Monthly Checkmark Tracker</title>
+  <title>Check It Off!</title>
 
   <style>
     body {
@@ -263,10 +263,13 @@
       <div id="grid" class="grid"></div>
     </div>
 
+    /* 12/6/25 hide
     <div class="footer">
-      Tip: Tap an activity name to rename it. Tap cells to toggle checkmarks.  
-      Deleting a row adjusts every month’s grid so things stay aligned.
+      Tip: Tap an activity name to rename it.  
+      Delete removes row for all months.
     </div>
+    */
+    
   </div>
 
   <script>
@@ -307,7 +310,7 @@
           }
 
           if (!Array.isArray(parsed.activities) || parsed.activities.length === 0) {
-            parsed.activities = ["Walk 20 minutes", "Stretching / Mobility", "Read 10 minutes"];
+            parsed.activities = ["Gym", "Read", "Walk"];
           }
 
           if (!parsed.months || typeof parsed.months !== "object") {
