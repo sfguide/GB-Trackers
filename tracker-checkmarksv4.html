@@ -196,6 +196,14 @@
       text-align: center;
     }
 
+    /* add image to delete button */
+    .row-button.delete img.delete-icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      pointer-events: none: /* important so clicking triggers delete */
+    }
+      
     /* Tablets and up: give labels and day cells more space */
     @media (min-width: 768px) {
       .days {
@@ -448,7 +456,8 @@
 
           const deleteBtn = document.createElement("button");
           deleteBtn.className = "row-button delete";
-          deleteBtn.textContent = "X";
+          /* deleteBtn.textContent = "X"; 12/7/25   */
+          deleteBtn.innerHTML = '<img src="trash.png" class="delete-icon" alt="Delete">';
           deleteBtn.dataset.rowIndex = rowIndex;
 
           deleteBtn.addEventListener("click", function () {
