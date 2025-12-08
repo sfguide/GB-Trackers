@@ -85,6 +85,12 @@
       font-size: 0.85rem;
     }
 
+    .add-row input#addInput {
+      width: 20ch;      /* makes the box ~20 chars wide */
+      min-width: 20ch;  /* prevents shrinking smaller */
+      max-width: 20ch;  /* prevents expanding */
+    }
+    
     button:active {
       transform: scale(0.98);
     }
@@ -167,7 +173,7 @@
     }
 
     .row-button.delete {
-      background: #f0051a;   /* #f8d7da; */
+      background: #f8d7da; 
     }
 
     .row-button:active {
@@ -203,7 +209,37 @@
       object-fit: contain;
       pointer-events: none: /* important so clicking triggers delete */
     }
-      
+
+    /* Make the buttons clean and icon-like */
+    .icon-btn {
+      padding: 4px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Size and render the icons consistently */
+    .icon-img {
+      width: 22px;      /* adjust as needed (20–28px works best) */
+      height: 22px;
+      object-fit: contain;
+      pointer-events: none; /* ensures clicking the button fires correctly */
+    }
+    
+    /* Optional: hover feedback */
+    .icon-btn:hover {
+      opacity: 0.75;
+    }
+    
+    /* Optional: focus style when navigating via keyboard */
+    .icon-btn:focus {
+      outline: 2px solid #4caf50;
+      border-radius: 4px;
+    }
+    
     /* Tablets and up: give labels and day cells more space */
     @media (min-width: 768px) {
       .days {
@@ -252,14 +288,17 @@
 
     <!-- Add activity + clear-month controls -->
     <div class="add-row">
-      <input
-        id="addInput"
-        type="text"
-        placeholder="Add a new activity…"
-        maxlength="20"
-      />
-      <button id="addBtn">Add Row</button>
-      <button id="clearBtn">Clear This Month</button>
+      <input id="addInput" type="text" placeholder="Add a new activity…" maxlength="20" />
+    
+      <!-- ADD ROW button with image -->
+      <button id="addBtn" class="icon-btn">
+        <img src="add-icon.png" alt="Add Row" class="icon-img">
+      </button>
+    
+      <!-- CLEAR MONTH button with image -->
+      <button id="clearBtn" class="icon-btn">
+        <img src="clear-icon.png" alt="Clear Month" class="icon-img">
+      </button>
     </div>
 
     <!-- Scrollable grid -->
