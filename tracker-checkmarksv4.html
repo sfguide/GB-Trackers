@@ -220,6 +220,14 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* limit activity size to 20 */
+    .act-name {
+      display: inline-block;
+      width: 20ch;         /* visual width of approx 20 characters */
+      overflow: hidden;
+      white-space: nowrap;
+    }
     
     /* Size and render the icons consistently */
     .icon-img {
@@ -479,6 +487,21 @@
           nameSpan.textContent = activityName;
           nameSpan.dataset.rowIndex = rowIndex;
 
+          // Limit activity name to 20 characters while typing
+          nameSpan.addEventListener("input", function () {
+            if (this.textContent.length > 20) {
+              this.textContent = this.textContent.slice(0, 20);
+          
+              // Move cursor to end (important for contenteditable)
+              const range = document.createRange();
+              const sel = window.getSelection();
+              range.selectNodeContents(this);
+              range.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          });
+          
           nameSpan.addEventListener("blur", function () {
             const idx = parseInt(this.dataset.rowIndex, 10);
             let newName = this.textContent.trim();
