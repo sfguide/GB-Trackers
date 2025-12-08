@@ -207,7 +207,7 @@
       width: 14px;
       height: 14px;
       object-fit: contain;
-      pointer-events: none: /* important so clicking triggers delete */
+      pointer-events: none; /* important so clicking triggers delete */
     }
 
     /* Make the buttons clean and icon-like */
@@ -315,10 +315,9 @@
     
     
   </div>
-
   <script>
     (function () {
-      const DAYS = 31;
+      const DAYS = 31; // max days; we still store up to 31 slots per row
       const STORAGE_KEY = "trackerCheckmark_perMonth_v1";
 
       const MONTH_NAMES = [
@@ -382,8 +381,8 @@
       }
 
       function getDaysInMonth(monthIndex, year) {
-      // monthIndex is 0-based; using day 0 of next month gives last day of current month
-      return new Date(year, monthIndex + 1, 0).getDate();
+        // monthIndex is 0-based; using day 0 of next month gives last day of current month
+        return new Date(year, monthIndex + 1, 0).getDate();
       }
       
       /**
@@ -420,10 +419,9 @@
         monthSelect.value = String(state.selectedMonth);
         yearSelect.value = String(state.selectedYear);
 
-        //Ensure month state exsits, but we no longer use a label input
+        // Ensure month state exists
         ensureMonthState(state.selectedMonth, state.selectedYear);
       }
-
 
       function handleMonthYearChange() {
         const m = parseInt(monthSelect.value, 10);
@@ -435,9 +433,9 @@
         ensureMonthState(state.selectedMonth, state.selectedYear);
         setMonthYearControlsFromState();
         saveState();
+        buildDayHeader();
         buildGrid();
       }
-
 
       function buildDayHeader() {
         daysHeader.innerHTML = "";
@@ -447,6 +445,9 @@
         daysHeader.appendChild(activityHeader);
       
         const daysInMonth = getDaysInMonth(state.selectedMonth, state.selectedYear);
+
+        // Update header grid column count for this month
+        daysHeader.style.gridTemplateColumns = `160px repeat(${daysInMonth}, 18px)`;
       
         for (let d = 1; d <= daysInMonth; d++) {
           const dayDiv = document.createElement("div");
@@ -462,6 +463,10 @@
         const y = state.selectedYear;
         const monthState = ensureMonthState(m, y);
         const cells = monthState.cells;
+        const daysInMonth = getDaysInMonth(m, y);
+
+        // Update body grid column count for this month
+        grid.style.gridTemplateColumns = `160px repeat(${daysInMonth}, 18px)`;
 
         state.activities.forEach((activityName, rowIndex) => {
           // Left label cell
@@ -505,7 +510,6 @@
 
           const deleteBtn = document.createElement("button");
           deleteBtn.className = "row-button delete";
-          /* deleteBtn.textContent = "X"; 12/7/25   */
           deleteBtn.innerHTML = '<img src="trash.png" class="delete-icon" alt="Delete">';
           deleteBtn.dataset.rowIndex = rowIndex;
 
@@ -520,8 +524,8 @@
           rowLabel.appendChild(buttonsDiv);
           grid.appendChild(rowLabel);
 
-          // Day cells 1..31
-          for (let dayIndex = 0; dayIndex < DAYS; dayIndex++) {
+          // Day cells for this month only
+          for (let dayIndex = 0; dayIndex < daysInMonth; dayIndex++) {
             const cell = document.createElement("div");
             const id = rowIndex + "-" + dayIndex;
             cell.className = "cell";
@@ -539,7 +543,7 @@
             });
 
             grid.appendChild(cell);
-          
+          }
         });
       }
 
@@ -573,6 +577,7 @@
         });
 
         saveState();
+        buildDayHeader();
         buildGrid();
       }
 
@@ -582,6 +587,7 @@
         state.activities.push(name);
         addInput.value = "";
         saveState();
+        buildDayHeader();
         buildGrid();
       }
 
@@ -619,5 +625,6 @@
       buildGrid();
     })();
   </script>
+
 </body>
 </html>
