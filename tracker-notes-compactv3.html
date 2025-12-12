@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Monthly Notes Grid (Compact v2)</title>
+  <title>Fill It Out!</title>
 
   <style>
     body {
@@ -39,7 +39,7 @@
     .row {
       display: flex;
       gap: 10px;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
       margin-bottom: 12px;
       font-size: 0.9rem;
@@ -62,7 +62,8 @@
       margin-bottom: 12px;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-left: 4px;
     }
 
     /* input sized to ~20 characters */
@@ -218,8 +219,7 @@
 
 <body>
   <div class="wrap">
-    <h1>Monthly Notes Grid (Compact)</h1>
-    <div class="sub">Add activities and type short notes for each day. Saved per month on this device.</div>
+    <h1>Fill It Out!</h1>
 
     <div class="row">
       <label for="monthSelect">Month:</label>
