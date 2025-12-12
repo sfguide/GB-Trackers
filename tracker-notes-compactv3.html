@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Monthly Notes Grid (Compact v2)</title>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f4f4f4;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 4px;
+      font-size: 1.3rem;
+    }
+
+    .sub {
+      text-align: center;
+      color: #666;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+
+    /* Month / Year controls */
+    .row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      align-items: center;
+    }
+
+    .row label { font-weight: 500; }
+
+    .row select {
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* Add row controls */
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* input sized to ~20 characters */
+    .add-row input#addInput {
+      width: 20ch;
+      min-width: 20ch;
+      max-width: 20ch;
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    /* icon buttons */
+    .icon-btn {
+      padding: 4px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .icon-btn:hover { opacity: 0.78; }
+    .icon-btn:focus { outline: 2px solid rgba(76,175,80,0.35); border-radius: 6px; }
+
+    /* Horizontal scroll wrapper */
+    .scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 8px;
+    }
+
+    /* Header row */
+    .days {
+      display: grid;
+      grid-template-columns: 160px repeat(31, 18px);
+      gap: 2px;
+      font-size: 0.65rem;
+      min-width: max-content;
+      align-items: center;
+    }
+    .days div:first-child {
+      text-align: left;
+      padding-left: 4px;
+      font-weight: 600;
+    }
+    .days div:not(:first-child) { text-align: center; }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 160px repeat(31, 18px);
+      gap: 2px;
+      min-width: max-content;
+      align-items: center;
+    }
+
+    .act-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      font-size: 0.8rem;
+      color: #555;
+      box-sizing: border-box;
+      gap: 6px;
+    }
+
+    .act-name {
+      flex: 1;
+      outline: none;
+      border-radius: 4px;
+      padding: 2px 0;
+      text-align: left;
+    }
+    .act-name[contenteditable="true"]:focus { background: #f0f0f0; }
+
+    .row-buttons {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .row-button.delete {
+      border: none;
+      background: #f0051a;      /* keep your red */
+      border-radius: 6px;
+      padding: 4px 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .row-button.delete img.delete-icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      pointer-events: none;
+      filter: brightness(1000%); /* makes dark icons white-ish (optional) */
+    }
+
+    /* Notes cell */
+    .cell {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fafafa;
+      height: 30px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      overflow: hidden;
+    }
+
+    .cell-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      text-align: center;
+      font-size: 0.75rem;
+      padding: 0 2px;
+      box-sizing: border-box;
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #777;
+      text-align: center;
+    }
+
+    /* Tablets and up */
+    @media (min-width: 768px) {
+      .days { grid-template-columns: 200px repeat(31, 26px); }
+      .grid { grid-template-columns: 200px repeat(31, 26px); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>Monthly Notes Grid (Compact)</h1>
+    <div class="sub">Add activities and type short notes for each day. Saved per month on this device.</div>
+
+    <div class="row">
+      <label for="monthSelect">Month:</label>
+      <select id="monthSelect">
+        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+      </select>
+
+      <label for="yearSelect">Year:</label>
+      <select id="yearSelect"></select>
+    </div>
+
+    <div class="add-row">
+      <input id="addInput" type="text" placeholder="Add a new activity…" maxlength="20" />
+
+      <button id="addBtn" class="icon-btn" title="Add Row">
+        <img src="add-icon.png" alt="Add Row" class="icon-img">
+      </button>
+
+      <button id="clearBtn" class="icon-btn" title="Clear This Month">
+        <img src="clear-icon.png" alt="Clear Month" class="icon-img">
+      </button>
+    </div>
+
+    <div class="scroll-wrap">
+      <div id="days" class="days"></div>
+      <div id="grid" class="grid"></div>
+    </div>
+
+    <div class="footer">
+      Tip: Tap an activity name to rename it (20 chars max). Notes are saved automatically.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "gb-notes-compact-v2";
+      const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+      // Cell widths (match your CSS defaults)
+      const CELL_WIDTH_PHONE = 18;
+      const CELL_WIDTH_TABLET = 26;
+      const LABEL_WIDTH_PHONE = 160;
+      const LABEL_WIDTH_TABLET = 200;
+
+      const monthSelect = document.getElementById("monthSelect");
+      const yearSelect = document.getElementById("yearSelect");
+      const addInput = document.getElementById("addInput");
+      const addBtn = document.getElementById("addBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const daysHeader = document.getElementById("days");
+      const grid = document.getElementById("grid");
+
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          const now = new Date();
+
+          if (typeof parsed.selectedMonth !== "number" || parsed.selectedMonth < 0 || parsed.selectedMonth > 11) {
+            parsed.selectedMonth = now.getMonth();
+          }
+          if (typeof parsed.selectedYear !== "number") {
+            parsed.selectedYear = now.getFullYear();
+          }
+
+          if (!Array.isArray(parsed.activities) || parsed.activities.length === 0) {
+            parsed.activities = ["Mood", "Workout", "Water", "Reading"];
+          }
+
+          if (!parsed.months || typeof parsed.months !== "object") {
+            parsed.months = {};
+          }
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+          return parsed;
+        } catch (e) {
+          const now = new Date();
+          return { selectedMonth: now.getMonth(), selectedYear: now.getFullYear(), activities: ["Mood","Workout"], months: {} };
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function getMonthKey(m, y) {
+        return y + "-" + String(m + 1).padStart(2, "0");
+      }
+
+      function getDaysInMonth(m, y) {
+        return new Date(y, m + 1, 0).getDate();
+      }
+
+      function ensureMonthState(m, y) {
+        const key = getMonthKey(m, y);
+        if (!state.months[key]) {
+          state.months[key] = { cells: {} }; // cells: { "rowIndex-dayIndex": "text" }
+          saveState();
+        }
+        return state.months[key];
+      }
+
+      function initYearSelect() {
+        const currentYear = new Date().getFullYear();
+        const start = currentYear - 3;
+        const end = currentYear + 3;
+
+        yearSelect.innerHTML = "";
+        for (let y = start; y <= end; y++) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          yearSelect.appendChild(opt);
+        }
+      }
+
+      function setControlsFromState() {
+        monthSelect.value = String(state.selectedMonth);
+        yearSelect.value = String(state.selectedYear);
+        ensureMonthState(state.selectedMonth, state.selectedYear);
+      }
+
+      function currentLayout() {
+        const isTablet = window.matchMedia && window.matchMedia("(min-width: 768px)").matches;
+        return {
+          labelWidth: isTablet ? LABEL_WIDTH_TABLET : LABEL_WIDTH_PHONE,
+          cellWidth: isTablet ? CELL_WIDTH_TABLET : CELL_WIDTH_PHONE
+        };
+      }
+
+      function applyGridTemplate(daysInMonth) {
+        const { labelWidth, cellWidth } = currentLayout();
+        const tpl = `${labelWidth}px repeat(${daysInMonth}, ${cellWidth}px)`;
+        daysHeader.style.gridTemplateColumns = tpl;
+        grid.style.gridTemplateColumns = tpl;
+      }
+
+      function handleMonthYearChange() {
+        const m = parseInt(monthSelect.value, 10);
+        const y = parseInt(yearSelect.value, 10);
+        if (!isNaN(m)) state.selectedMonth = m;
+        if (!isNaN(y)) state.selectedYear = y;
+
+        ensureMonthState(state.selectedMonth, state.selectedYear);
+        saveState();
+        buildDayHeader();
+        buildGrid();
+      }
+
+      function buildDayHeader() {
+        daysHeader.innerHTML = "";
+
+        const first = document.createElement("div");
+        first.textContent = "Activity";
+        daysHeader.appendChild(first);
+
+        const dCount = getDaysInMonth(state.selectedMonth, state.selectedYear);
+        applyGridTemplate(dCount);
+
+        for (let d = 1; d <= dCount; d++) {
+          const dayDiv = document.createElement("div");
+          dayDiv.textContent = d;
+          daysHeader.appendChild(dayDiv);
+        }
+      }
+
+      function buildGrid() {
+        grid.innerHTML = "";
+
+        const m = state.selectedMonth;
+        const y = state.selectedYear;
+        const monthState = ensureMonthState(m, y);
+        const cells = monthState.cells;
+        const dCount = getDaysInMonth(m, y);
+        applyGridTemplate(dCount);
+
+        state.activities.forEach((activityName, rowIndex) => {
+          // left label cell
+          const rowLabel = document.createElement("div");
+          rowLabel.className = "act-label";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "act-name";
+          nameSpan.contentEditable = "true";
+          nameSpan.textContent = activityName;
+          nameSpan.dataset.rowIndex = rowIndex;
+
+          // limit activity name to 20 chars
+          nameSpan.addEventListener("input", function () {
+            if (this.textContent.length > 20) {
+              this.textContent = this.textContent.slice(0, 20);
+              const range = document.createRange();
+              const sel = window.getSelection();
+              range.selectNodeContents(this);
+              range.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          });
+
+          nameSpan.addEventListener("blur", function () {
+            const idx = parseInt(this.dataset.rowIndex, 10);
+            let newName = this.textContent.trim();
+            if (!newName) {
+              newName = "Activity " + (idx + 1);
+              this.textContent = newName;
+            }
+            state.activities[idx] = newName;
+            saveState();
+          });
+
+          const buttonsDiv = document.createElement("div");
+          buttonsDiv.className = "row-buttons";
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "row-button delete";
+          deleteBtn.innerHTML = '<img src="trash.png" class="delete-icon" alt="Delete">';
+          deleteBtn.dataset.rowIndex = rowIndex;
+
+          deleteBtn.addEventListener("click", function () {
+            const idx = parseInt(this.dataset.rowIndex, 10);
+            if (!confirm("Delete this activity row from all months?")) return;
+            deleteActivityRow(idx);
+          });
+
+          buttonsDiv.appendChild(deleteBtn);
+          rowLabel.appendChild(nameSpan);
+          rowLabel.appendChild(buttonsDiv);
+          grid.appendChild(rowLabel);
+
+          // day cells for this month only
+          for (let dayIndex = 0; dayIndex < dCount; dayIndex++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+
+            const id = rowIndex + "-" + dayIndex;
+
+            const input = document.createElement("input");
+            input.className = "cell-input";
+            input.type = "text";
+            input.maxLength = 12; // compact notes; change to 20 if you want longer
+            input.dataset.id = id;
+            input.value = cells[id] || "";
+
+            input.addEventListener("input", function () {
+              monthState.cells[this.dataset.id] = this.value;
+              saveState();
+            });
+
+            cell.appendChild(input);
+            grid.appendChild(cell);
+          }
+        });
+      }
+
+      function deleteActivityRow(rowIndex) {
+        state.activities = state.activities.filter((_, i) => i !== rowIndex);
+
+        // Reindex stored cells for ALL months so rows stay aligned
+        Object.keys(state.months).forEach((key) => {
+          const monthState = state.months[key];
+          const oldCells = monthState.cells || {};
+          const newCells = {};
+
+          Object.keys(oldCells).forEach((cellKey) => {
+            const [rStr, dStr] = cellKey.split("-");
+            const r = parseInt(rStr, 10);
+            const d = parseInt(dStr, 10);
+            if (isNaN(r) || isNaN(d)) return;
+
+            if (r < rowIndex) newCells[r + "-" + d] = oldCells[cellKey];
+            else if (r > rowIndex) newCells[(r - 1) + "-" + d] = oldCells[cellKey];
+          });
+
+          monthState.cells = newCells;
+        });
+
+        saveState();
+        buildDayHeader();
+        buildGrid();
+      }
+
+      function addActivity() {
+        const name = addInput.value.trim();
+        if (!name) return;
+        state.activities.push(name);
+        addInput.value = "";
+        saveState();
+        buildDayHeader();
+        buildGrid();
+      }
+
+      function clearCurrentMonthCells() {
+        const m = state.selectedMonth;
+        const y = state.selectedYear;
+        const monthState = ensureMonthState(m, y);
+        monthState.cells = {};
+        saveState();
+        buildGrid();
+      }
+
+      // events
+      addBtn.addEventListener("click", addActivity);
+      addInput.addEventListener("keyup", (e) => { if (e.key === "Enter") addActivity(); });
+
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Clear all notes for this month?")) return;
+        clearCurrentMonthCells();
+      });
+
+      monthSelect.addEventListener("change", handleMonthYearChange);
+      yearSelect.addEventListener("change", handleMonthYearChange);
+
+      // keep grid template correct if rotating / resizing
+      window.addEventListener("resize", () => {
+        buildDayHeader();
+        buildGrid();
+      });
+
+      // init
+      initYearSelect();
+      setControlsFromState();
+      buildDayHeader();
+      buildGrid();
+    })();
+  </script>
+</body>
+</html>
